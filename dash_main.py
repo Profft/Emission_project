@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Apr 18 14:32:13 2023
-
-@author: Dev_Env
 """
 
 import dash
@@ -20,6 +18,24 @@ df = df.drop(df[df['country'] == 'World'].index)
 # Group the remaining rows by country and sum the values
 df_grouped = df.groupby('country').sum().reset_index()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Create the Dash app
 app = dash.Dash(__name__)
 
@@ -29,8 +45,9 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='choropleth-map',
         figure=px.choropleth(df_grouped, locations='country',locationmode='country names', color='emissions', hover_name='country')
-    )
-])
+        )
+]
+)
 
 # Run the app
 if __name__ == '__main__':
