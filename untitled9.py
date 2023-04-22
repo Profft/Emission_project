@@ -22,3 +22,5 @@ fig = px.scatter(df_grouped, x="emissions", y="type",
 	         size="emissions", color="region",
                  hover_name="country", log_x=True, size_max=60)
 fig.show()
+
+df.head
