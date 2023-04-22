@@ -29,17 +29,26 @@ stacked_bar_chart_trace = dict(x='emissions', y='region', color='country', barmo
 choropleth_map_layout = dict(title='Emissions by Country', height=800, width=950, margin=dict(l=0, r=0, t=40, b=0))
 choropleth_map_trace = dict(locations='country', locationmode='country names', color='emissions', projection='orthographic', hover_name='country')
 
+# Define options for dropdown filters
+projection_options = [{'label': 'Equirectangular', 'value': 'equirectangular'},                      {'label': 'Mercator', 'value': 'mercator'},                      {'label': 'Orthographic', 'value': 'orthographic'},                      {'label': 'Natural Earth', 'value': 'natural earth'},                      {'label': 'Kavrayskiy7', 'value': 'kavrayskiy7'},                      {'label': 'Miller', 'value': 'miller'},                      {'label': 'Robinson', 'value': 'robinson'},                      {'label': 'Eckert4', 'value': 'eckert4'},                      {'label': 'Azimuthal Equal Area', 'value': 'azimuthal equal area'},                      {'label': 'Azimuthal Equidistant', 'value': 'azimuthal equidistant'},                      {'label': 'Conic Equal Area', 'value': 'conic equal area'},                      {'label': 'Conic Conformal', 'value': 'conic conformal'},                      {'label': 'Conic Equidistant', 'value': 'conic equidistant'},                      {'label': 'Gnomonic', 'value': 'gnomonic'},                      {'label': 'Stereographic', 'value': 'stereographic'},                      {'label': 'Mollweide', 'value': 'mollweide'},                      {'label': 'Hammer', 'value': 'hammer'},                      {'label': 'Transverse Mercator', 'value': 'transverse mercator'}]
+
 app.layout = html.Div([
     html.H1("Emissions of different segments in 2022"),
     html.Div([
-        html.Div([
-            html.Label("Segment"),
-            dcc.Dropdown(id='segment_dropdown',
-                         options=segment_options,
-                         value=[df['segment'].iloc[11]],
-                         multi=True)
-        ], className="filter")
-    ], className="filter-container"),
+    html.Div([
+        html.Label("Segment"),
+        dcc.Dropdown(id='segment_dropdown',
+                     options=segment_options,
+                     value=[df['segment'].iloc[11]],
+                     multi=True)
+    ], className="filter", style={"width": "50%", "display": "inline-block"}),
+    html.Div([
+        html.Label("Projection"),
+        dcc.Dropdown(id='projection_dropdown',
+                     options=projection_options,
+                     value='orthographic')
+    ], className="filter", style={"width": "50%", "display": "inline-block"}),
+], className="filter-container"),
     html.Div([
         html.Div([
             dcc.Graph(id="stacked_bar_chart", figure=dict(layout=stacked_bar_chart_layout, data=[]))
@@ -57,8 +66,9 @@ segment_value = [df['segment'].iloc[11]]
 @app.callback(
     [Output('stacked_bar_chart', 'figure'),
      Output('choropleth_map', 'figure')],
-    [Input('segment_dropdown', 'value')])
-def update_figures(segment_value):
+    [Input('segment_dropdown', 'value'),
+     Input('projection_dropdown', 'value')])
+def update_figures(segment_value, projection_value):
     global filtered_df
     if not segment_value:
         segment_value = [df['segment'].iloc[11]]
@@ -73,10 +83,9 @@ def update_figures(segment_value):
     
     # Create choropleth map
     choropleth_map = px.choropleth(filtered_df, locations='country', locationmode='country names', color='emissions',
-                                   projection='orthographic', hover_name='country', title='Emissions by Country')
+                                   projection=projection_value, hover_name='country', title='Emissions by Country')
     choropleth_map.update_layout(height=800, width=950)
     choropleth_map.update_layout(margin=dict(l=0, r=0, t=40, b=0))
-    #choropleth_map.update_geos(bgcolor='blue')
     return stacked_bar_chart, choropleth_map
 
 # Run app
