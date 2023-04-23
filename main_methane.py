@@ -6,7 +6,6 @@ Created on Sun Apr 23 00:29:11 2023
 """
 
 #Import necessary libraries
-
 import pandas as pd
 import plotly.express as px
 import dash
