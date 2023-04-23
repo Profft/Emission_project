@@ -16,6 +16,7 @@ from dash.dependencies import Input, Output, State
 df = pd.read_csv('Methane_final.csv', usecols=['baseYear', 'region', 'country', 'segment', 'emissions'])
 df = df.loc[df['baseYear'] == "2022"]
 df = df.loc[df['region'] != "World"]
+df = df.groupby(['country', 'segment']).sum().reset_index()
 
 new_col = df['region'].copy().rename('country_r')
 new_df = pd.concat([df, new_col], axis=1)
