@@ -73,9 +73,11 @@ app.layout = html.Div([
             dcc.Graph(id="stacked_bar_chart", figure=dict(layout=stacked_bar_chart_layout, data=[]))
         ], className="chart-container", style={"width": "50%"}),
         html.Div([
-            dcc.Graph(id="choropleth_map", figure=dict(layout=choropleth_map_layout, data=[]))
+            dcc.Graph(id="choropleth_map", figure=dict(layout=choropleth_map_layout, data=[])),
+            
         ], className="chart-container", style={"width": "50%"})
     ], className="chart-section", style={"display": "flex"}),
+    
 ])
 
 @app.callback(
@@ -83,7 +85,7 @@ app.layout = html.Div([
      Output('choropleth_map', 'figure')],
     [Input('segment_dropdown', 'value'),
      Input('projection_dropdown', 'value'),
-     Input('switch_data_button', 'n_clicks')])
+     Input('switch_data_button', 'n_clicks'),])
 def update_figures(segment_value, projection_value, n_clicks):
     global filtered_df
     global df
@@ -100,7 +102,6 @@ def update_figures(segment_value, projection_value, n_clicks):
         # Create choropleth map
         choropleth_map = px.choropleth(filtered_df, locations='country', locationmode='country names', color='emissions',projection=projection_value, hover_name='country')
         choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})", geo=dict(showframe=False, showcoastlines=True, projection_scale=1))
-    
     else:
         filtered_df = result_df[result_df['segment'].isin(segment_value)]
 
@@ -115,7 +116,6 @@ def update_figures(segment_value, projection_value, n_clicks):
                                     projection=projection_value, hover_name='region')
         choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})",
                                  geo=dict(showframe=False, showcoastlines=True, projection_scale=1))
-    
     return [stacked_bar_chart, choropleth_map]
 
 
