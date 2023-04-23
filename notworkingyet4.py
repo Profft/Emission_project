@@ -14,9 +14,9 @@ from dash.dependencies import Input, Output, State
 
 # Load data
 df = pd.read_csv('Methane_final.csv', usecols=['baseYear', 'region', 'country', 'segment', 'emissions'])
-df = df.loc[df['baseYear'] == "2022"]
-df = df.loc[df['region'] != "World"]
-#df = df.groupby(['country', 'segment']).sum().reset_index()
+
+
+df = df.query('baseYear == "2022" and region != "World"')
 
 df = df.groupby(['country', 'segment']).agg({
     'emissions': 'sum',  # sum the emissions column
