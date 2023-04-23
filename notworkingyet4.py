@@ -16,11 +16,23 @@ from dash.dependencies import Input, Output, State
 df = pd.read_csv('Methane_final.csv', usecols=['baseYear', 'region', 'country', 'segment', 'emissions'])
 df = df.loc[df['baseYear'] == "2022"]
 df = df.loc[df['region'] != "World"]
-df = df.groupby(['country', 'segment']).sum().reset_index()
+#df = df.groupby(['country', 'segment']).sum().reset_index()
 
-new_col = df['region'].copy().rename('country_r')
-new_df = pd.concat([df, new_col], axis=1)
-#region_df = df.groupby(['region','segment'])['emissions'].sum().reset_index()
+df = df.groupby(['country', 'segment']).agg({
+    'emissions': 'sum',  # sum the emissions column
+    'baseYear': 'first',  # keep the first value of the baseYear column
+    'region': 'first'  # keep the first value of the region column
+}).reset_index()
+
+
+#test
+grouped_df = df.groupby(['country', 'segment']).sum().reset_index()
+region_segment_df = grouped_df.groupby(['region', 'segment']).sum().reset_index()
+
+country_count = region_segment_df.groupby('region')['country'].count()
+region_segment_df['emissions'] = region_segment_df['emissions'] / region_segment_df['region'].map(country_count)
+
+result_df = grouped_df.merge(region_segment_df[['region', 'segment', 'emissions']], on=['region', 'segment'], how='left')
 
 # Create app
 app = dash.Dash(__name__)
@@ -39,14 +51,14 @@ projection_options = [{'label': 'Equirectangular', 'value': 'equirectangular'}, 
 
 # Define layout
 app.layout = html.Div([
-    html.H1("Emissions of different segments in 2022"),
-    html.Button('Switch Data', id='switch_data_button', n_clicks=0),
+    html.H1("Methane Emissions of different segments in 2022"),
+    html.Button('Country View/Accumulated Region', id='switch_data_button', n_clicks=0),
     html.Div([
         html.Div([
             html.Label("Segment"),
             dcc.Dropdown(id='segment_dropdown',
                          options=segment_options,
-                         value=[df['segment'].iloc[11]],
+                         value=[df['segment'].iloc[7]],
                          multi=True)
         ], className="filter", style={"width": "50%", "display": "inline-block"}),
         html.Div([
@@ -87,22 +99,22 @@ def update_figures(segment_value, projection_value, n_clicks):
 
         # Create choropleth map
         choropleth_map = px.choropleth(filtered_df, locations='country', locationmode='country names', color='emissions',projection=projection_value, hover_name='country')
-        choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})", geo=dict(showframe=False, showcoastlines=False, projection_scale=0.5))
+        choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})", geo=dict(showframe=False, showcoastlines=True, projection_scale=1))
     
     else:
-        filtered_df = new_df[new_df['segment'].isin(segment_value)]
+        filtered_df = result_df[result_df['segment'].isin(segment_value)]
 
     # Create stacked bar chart
-        stacked_bar_chart = px.bar(filtered_df, x='emissions', y='region', color='region', barmode='stack', orientation='h')
+        stacked_bar_chart = px.bar(filtered_df, x='emissions_y', y='region', color='region')
         stacked_bar_chart.update_layout(title=f"Emissions by Region ({', '.join(segment_value)})")
         stacked_bar_chart.update_traces(hovertemplate="Emissions: %{x}")
-        stacked_bar_chart.update_xaxes(title_text='Emissions (kt of CO2 equivalent)')
+        stacked_bar_chart.update_xaxes(title_text='Emissions')
 
     # Create choropleth map
-        choropleth_map = px.choropleth(filtered_df, locations='country', locationmode='country names', color='emissions',
+        choropleth_map = px.choropleth(filtered_df, locations='country', locationmode='country names', color='region',
                                     projection=projection_value, hover_name='region')
         choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})",
-                                 geo=dict(showframe=False, showcoastlines=False, projection_scale=0.5))
+                                 geo=dict(showframe=False, showcoastlines=True, projection_scale=1))
     
     return [stacked_bar_chart, choropleth_map]
 

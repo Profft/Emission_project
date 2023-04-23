@@ -37,7 +37,7 @@ choropleth_map_trace = dict(locations='country', locationmode='country names', c
 projection_options = [{'label': 'Equirectangular', 'value': 'equirectangular'},                      {'label': 'Mercator', 'value': 'mercator'},                      {'label': 'Orthographic', 'value': 'orthographic'},                      {'label': 'Natural Earth', 'value': 'natural earth'},                      {'label': 'Kavrayskiy7', 'value': 'kavrayskiy7'},                      {'label': 'Miller', 'value': 'miller'},                      {'label': 'Robinson', 'value': 'robinson'},                      {'label': 'Eckert4', 'value': 'eckert4'},                      {'label': 'Azimuthal Equal Area', 'value': 'azimuthal equal area'},                      {'label': 'Azimuthal Equidistant', 'value': 'azimuthal equidistant'},                      {'label': 'Conic Equal Area', 'value': 'conic equal area'},                      {'label': 'Conic Conformal', 'value': 'conic conformal'},                      {'label': 'Conic Equidistant', 'value': 'conic equidistant'},                      {'label': 'Gnomonic', 'value': 'gnomonic'},                      {'label': 'Stereographic', 'value': 'stereographic'},                      {'label': 'Mollweide', 'value': 'mollweide'},                      {'label': 'Hammer', 'value': 'hammer'},                      {'label': 'Transverse Mercator', 'value': 'transverse mercator'}]
 
 app.layout = html.Div([
-    html.H1("Emissions of different segments in 2022"),
+    html.H1("Methane Emissions of different segments in 2022"),
     html.Div([
     html.Div([
         html.Label("Segment"),
