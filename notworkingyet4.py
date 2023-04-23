@@ -16,7 +16,10 @@ from dash.dependencies import Input, Output, State
 df = pd.read_csv('Methane_final.csv', usecols=['baseYear', 'region', 'country', 'segment', 'emissions'])
 df = df.loc[df['baseYear'] == "2022"]
 df = df.loc[df['region'] != "World"]
-region_df = df.groupby(['region','segment'])['emissions'].sum().reset_index()
+
+new_col = df['region'].copy().rename('country_r')
+new_df = pd.concat([df, new_col], axis=1)
+#region_df = df.groupby(['region','segment'])['emissions'].sum().reset_index()
 
 # Create app
 app = dash.Dash(__name__)
@@ -71,7 +74,7 @@ app.layout = html.Div([
 def update_figures(segment_value, projection_value, n_clicks):
     global filtered_df
     global df
-    global region_df
+    global new_df
     if n_clicks % 2 == 0:
         filtered_df = df[df['segment'].isin(segment_value)]
     
@@ -86,7 +89,7 @@ def update_figures(segment_value, projection_value, n_clicks):
         choropleth_map.update_layout(title=f"Emissions by Country ({', '.join(segment_value)})", geo=dict(showframe=False, showcoastlines=False, projection_scale=0.5))
     
     else:
-        filtered_df = region_df[region_df['segment'].isin(segment_value)]
+        filtered_df = new_df[new_df['segment'].isin(segment_value)]
 
     # Create stacked bar chart
         stacked_bar_chart = px.bar(filtered_df, x='emissions', y='region', color='region', barmode='stack', orientation='h')
