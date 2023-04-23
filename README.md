@@ -1,4 +1,4 @@
-# Emission_project
+# Methane Emissions Dashboard
 Methane Emissions Dashboard
 This dashboard presents methane emissions data for various regions, countries, and segments in 2022, based on the data in the Methane_final.csv file. The dashboard provides a stacked bar chart and a choropleth map for visualizing the data, and it allows users to filter the data by segment and projection.
 
