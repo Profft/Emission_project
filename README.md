@@ -6,11 +6,9 @@ This dashboard presents methane emissions data for various regions, countries, a
 
 
 Getting Started
-Before running the application, make sure that you have the necessary libraries installed. You can install the required libraries using the following command:
+Before running the application, make sure that you have the necessary libraries installed. You can install the required libraries using the following command: pip install pandas plotly dash
 
-pip install pandas plotly dash
 To run the application, execute the following command:
-
 
 Data Processing
 The Methane_final.csv file contains methane emissions data for different regions, countries, and segments. The data is processed using pandas and plotted using plotly and dash libraries.
